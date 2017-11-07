@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="zikZak" default="help" basedir=".">
+
+	<!-- properties setup -->
+	<property file="${zikZakEnvProperties}"/>
+	<property file="${zikZakPasswordsFilePath}"/>
+	<property name="deploy.root" value="${zikZakPkgsDir}"/>
+	<property name="zikZakHomeDir" location="${zikZakAppDir}/../.."/>
+	<property name="zikZakAppDynamicsDir" location="${zikZakHomeDir}/appdynamics"/>
+
+	<!-- help -->
+	<target name="help"/>
+
+	<!-- config environment -->
+	<target name="postDeploy">
+		<echo message="========================================"/>
+		<echo message="Diagnostics: Values from ANT script"/>
+		<echo message="========================================"/>
+		<echo message="zikZakEnvName : ${zikZakEnvName}"/>
+		<echo message="zikZakEnvNameLC : ${zikZakEnvNameLC}"/>
+		<echo message="zikZakAppDir : ${zikZakAppDir}"/>
+		<echo message="zikZakPkgsDir : ${zikZakPkgsDir}"/>
+		<echo message="zikZakLogDir : ${zikZakLogDir}"/>
+		<echo message="zikZakEnvProperties : ${zikZakEnvProperties}"/>
+		<echo message="zikZakPasswordsFilePath : ${zikZakPasswordsFilePath}"/>
+		<echo message="zikZakHomeDir : ${zikZakHomeDir}"/>
+		<echo message="zikZakAppDynamicsDir : ${zikZakAppDynamicsDir}"/>
+		<echo message="version : ${version}"/>
+		<echo message="deploy.root : ${deploy.root}"/>
+
+		<copy todir="${deploy.root}/config" overwrite="true">
+			<fileset dir="${deploy.root}/postDeploy">
+				<include name="myapp-${zikZakEnvNameLC}.properties"/>
+				<include name="log4j-${zikZakEnvNameLC}.xml"/>
+			</fileset>
+			<filterchain>
+				<replacetokens>
+					<token key="VERSION" value="${version}"/>
+					<token key="ZIKZAK_ENV" value="${zikZakEnvName}"/>
+					<token key="ZIKZAK_ENV_LC" value="${zikZakEnvNameLC}"/>
+					<token key="DIR_APP_ZIKZAKJACKAPP" value="${zikZakAppDir}"/>
+					<token key="DIR_PKGS_ZIKZAKJACKAPP" value="${zikZakPkgsDir}"/>
+					<token key="DIR_LOG_ZIKZAKJACKAPP" value="${zikZakLogDir}"/>
+					<token key="DIR_APPDYNAMICS" value="${zikZakAppDynamicsDir}"/>
+					<token key="JDBCPASSWORD" value="${jdbcpassword}" />
+				</replacetokens>
+				<replacestring from="\" to="\"/>
+			</filterchain>
+		</copy>
+		<filterset id="zikZakJackFilterSet">
+			<filter token="CONFIGPATH" value="${zikzakjack.home}" />
+			<filter token="TEMPFOLDER" value="${zikzakjack.home}/temp" />
+			<filter token="INSTANCE" value="${INSTANCE}" />
+			<filter token="JPROBE_CMD" value="${jprobe.home}/bin/jplauncher" />
+			<filter token="JPROBEHOME" value="${jprobe.home}" />
+		</filterset>
+
+		<copy todir="${deploy.root}/myapp-env-temp" overwrite="true">
+			<fileset dir="${deploy.root}/">
+				<include name="myapp.env" />
+			</fileset>
+			<filterchain>
+				<replacestring from="\" to="\" />
+			</filterchain>
+			<filterset refid="zikZakJackFilterSet" />
+		</copy>
+		<move file="${deploy.root}/myapp-env-temp/myapp.env" tofile="${deploy.root}/myapp.env" />
+		<delete dir="${deploy.root}/myapp-env-temp" />
+
+		<move file="${deploy.root}/config/log4j-${zikZakEnvNameLC}.xml" tofile="${deploy.root}/config/log4j.xml" />
+		<chmod file="${deploy.root}/config/*" perm="700"/>
+	</target>
+
+</project>
