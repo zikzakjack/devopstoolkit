@@ -1,0 +1,5 @@
+
+Add headers to multiple files
+
+for java in `find . -name "*.java"`; do echo copyright.txt $java ; done
+for java in `find . -name "*.java"`; do cat copyright.txt $java > tmpfile2; mv tmpfile2 $java; done
