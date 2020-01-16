@@ -7,7 +7,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
+		<org.springframework.version>5.2.3.RELEASE</org.springframework.version>
 		<fortify.f360.projectVersion>MYAPP</fortify.f360.projectVersion>
 	</properties>
 
